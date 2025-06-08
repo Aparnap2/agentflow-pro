@@ -1,0 +1,52 @@
+# Core
+fastapi==0.109.2
+uvicorn[standard]==0.27.1
+python-multipart==0.0.9
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-dotenv==1.0.1
+
+# Database
+sqlalchemy==2.0.25
+alembic==1.13.1
+psycopg2-binary==2.9.9
+asyncpg==0.29.0
+aiopg==1.4.0
+
+# AI/ML
+langchain==0.1.12
+langchain-community==0.0.20
+langchain-core==0.1.23
+langgraph==0.0.22
+crewai==0.28.4
+google-generativeai==0.3.2
+openai==1.12.0
+tiktoken==0.5.2
+qdrant-client==1.7.6
+sentence-transformers==2.2.2
+
+# Utilities
+pydantic==2.6.1
+pydantic-settings==2.1.0
+python-slugify==8.0.1
+loguru==0.7.2
+pytest==7.4.4
+httpx==0.26.0
+
+# Monitoring
+langfuse==2.8.2
+prometheus-fastapi-instrumentator==6.7.0
+opentelemetry-api==1.22.0
+opentelemetry-sdk==1.22.0
+
+# Graph RAG
+graphiti-mcp-client==0.2.0
+
+# Web crawling
+crawl4ai==0.4.0
+
+# Async
+anyio==4.3.0
+
+# CORS
+starlette==0.36.3

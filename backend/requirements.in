@@ -1,0 +1,51 @@
+# Core dependencies
+fastapi>=0.68.0,<0.69.0
+uvicorn>=0.15.0,<0.16.0
+pydantic>=1.8.0,<2.0.0
+python-dotenv>=0.19.0,<0.20.0
+python-jose[cryptography]>=3.3.0,<4.0.0
+passlib[bcrypt]>=1.7.4,<2.0.0
+python-multipart>=0.0.5,<0.0.6
+
+# Database
+sqlalchemy>=1.4.0,<2.0.0
+alembic>=1.7.0,<2.0.0
+psycopg2-binary>=2.9.0,<3.0.0
+redis>=4.0.0,<5.0.0
+
+# AI/ML
+openai>=0.27.0,<0.28.0
+langchain>=0.0.200,<0.1.0
+langchain-experimental>=0.0.3,<0.1.0
+langchain-community>=0.0.10,<0.1.0
+langchain-core>=0.1.0,<0.2.0
+langchain-text-splitters>=0.0.1,<0.1.0
+langchain-openai>=0.0.2,<0.1.0
+
+# CrewAI
+crewai>=0.5.0,<0.6.0
+
+# LangGraph
+langgraph>=0.0.10,<0.1.0
+
+# Langfuse
+langfuse>=2.0.0,<3.0.0
+
+# Monitoring and Observability
+opentelemetry-api>=1.12.0,<2.0.0
+opentelemetry-sdk>=1.12.0,<2.0.0
+opentelemetry-instrumentation-fastapi>=0.30b0,<0.40.0
+opentelemetry-exporter-otlp>=1.12.0,<2.0.0
+
+# Utilities
+tqdm>=4.62.0,<5.0.0
+python-dateutil>=2.8.2,<3.0.0
+python-slugify>=5.0.0,<6.0.0
+PyYAML>=6.0,<7.0
+requests>=2.26.0,<3.0.0
+
+# Testing
+pytest>=6.2.5,<7.0.0
+pytest-asyncio>=0.15.1,<0.16.0
+pytest-cov>=2.12.0,<3.0.0
+httpx>=0.21.0,<0.22.0
