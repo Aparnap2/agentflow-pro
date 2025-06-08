@@ -19,7 +19,7 @@ pip-delete-this-directory.txt
 .eggs/
 dist/
 build/
-
+lib/ai_backup_20250606_192006/
 # testing
 coverage
 
