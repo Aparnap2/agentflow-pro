@@ -1,0 +1,4 @@
+
+> agentflow-pro@0.0.0 lint
+> eslint . --format=json
+

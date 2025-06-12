@@ -1,0 +1,55 @@
+# Core
+fastapi==0.109.2
+uvicorn[standard]==0.27.1
+python-multipart==0.0.9
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-dotenv==1.0.1
+
+# Database
+neo4j==5.14.1
+neo4j-async==0.1.4
+# Optional: Keep SQLAlchemy if needed for other parts of the application
+sqlalchemy==2.0.25
+alembic==1.13.1
+
+# AI/ML
+langchain==0.1.12
+langchain-community==0.0.20
+langchain-core==0.1.23
+langgraph==0.0.22
+crewai==0.28.4
+openrouter==1.0.1  # OpenRouter client
+aiohttp==3.9.3  # Async HTTP client for OpenRouter
+google-generativeai==0.3.2
+openai==1.12.0
+tiktoken==0.5.2
+qdrant-client==1.7.6
+sentence-transformers==2.2.2
+
+# Utilities
+pydantic==2.6.1
+pydantic-settings==2.1.0
+python-slugify==8.0.1
+loguru==0.7.2
+pytest==7.4.4
+httpx==0.26.0
+tabulate==0.9.0  # For pretty-printing tables in scripts
+
+# Monitoring
+langfuse==2.8.2
+prometheus-fastapi-instrumentator==6.7.0
+opentelemetry-api==1.22.0
+opentelemetry-sdk==1.22.0
+
+# Graph RAG
+graphiti-mcp-client==0.2.0
+
+# Web crawling
+crawl4ai==0.4.0
+
+# Async
+anyio==4.3.0
+
+# CORS
+starlette==0.36.3
