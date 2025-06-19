@@ -1,10 +1,38 @@
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, DateTime, func
+from datetime import datetime
+from enum import Enum
+from typing import Dict, List, Optional, Any
+from pydantic import BaseModel, Field
+from uuid import uuid4
 
-Base = declarative_base()
+class UserRole(str, Enum):
+    OWNER = "owner"
+    ADMIN = "admin"
+    MEMBER = "member"
 
-class BaseModel:
-    """Base model with common fields"""
-    id = Column(Integer, primary_key=True, index=True)
-    created_at = Column(DateTime, default=func.now())
-    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+class AgentRole(str, Enum):
+    COFOUNDER = "cofounder"
+    MANAGER = "manager"
+    LEGAL_AGENT = "legal_agent"
+    FINANCE_AGENT = "finance_agent"
+    HEALTHCARE_AGENT = "healthcare_agent"
+    MANUFACTURING_AGENT = "manufacturing_agent"
+    ECOMMERCE_AGENT = "ecommerce_agent"
+    COACHING_AGENT = "coaching_agent"
+    SALES = "sales"
+    SUPPORT = "support"
+    GROWTH = "growth"
+
+class Department(str, Enum):
+    LEADERSHIP = "leadership"
+    OPERATIONS = "operations"
+    SALES = "sales"
+    MARKETING = "marketing"
+    SUPPORT = "support"
+    FINANCE = "finance"
+    HR = "hr"
+
+class MessageType(str, Enum):
+    HUMAN = "human"
+    AI = "ai"
+    SYSTEM = "system"
+    TOOL = "tool"

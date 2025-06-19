@@ -1,98 +1,127 @@
-from fastapi import FastAPI, Depends, HTTPException
+import os
+import logging
+from fastapi import FastAPI, Depends, HTTPException, status, Request
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
-from loguru import logger
-from typing import List
-import asyncio
+from typing import Optional
 
+# Import configurations and services
 from .core.config import settings
-from .api import api_router
-from .db.config import init_db, close_db
-from .db.repository import get_repository
+from .db.database import DatabaseService
+from .services.redis_service import RedisService
+from .services.auth_service import AuthService, security
+
+# Import routers
+from .api import auth, tasks, agents, billing, health
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Initialize services
+db = DatabaseService(settings.POSTGRES_URL)
+redis_service = RedisService()
+auth_service = AuthService(db=db)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup
-    logger.info("Starting up AgentFlow Pro API...")
+    """Application lifespan management"""
+    # Startup event
+    logger.info("Starting up...")
     
     try:
-        # Initialize database
-        logger.info("Initializing database...")
-        await init_db()
+        # Initialize database connection
+        await db.initialize()
+        logger.info("Database initialized")
         
-        # Test database connection
-        repo = get_repository()
-        with repo.driver.session() as session:
-            result = session.run("RETURN 'Neo4j connection successful' AS message")
-            logger.info(f"✓ {result.single()['message']}")
+        # Add any other initialization here
         
-        # Initialize AI services
-        from .services.ai.orchestrator import AIOrchestrator
-        app.state.ai_orchestrator = AIOrchestrator()
-        logger.info("✓ AI Orchestrator initialized")
-        
-        logger.info("✓ AgentFlow Pro API is ready")
-        
-        yield
+        yield  # Application runs here
         
     except Exception as e:
-        logger.error(f"Failed to start AgentFlow Pro API: {e}")
+        logger.error(f"Error during startup: {e}")
         raise
+    
     finally:
-        # Shutdown
-        logger.info("Shutting down AgentFlow Pro API...")
-        await close_db()
-        logger.info("✓ Database connections closed")
+        # Shutdown event
+        logger.info("Shutting down...")
+        # Cleanup resources if needed
 
+# Create FastAPI app
 app = FastAPI(
     title="AgentFlow Pro API",
-    description="Backend API for AgentFlow Pro - AI Agent Automation Platform",
+    description="Backend API for AgentFlow Pro - AI Agent Orchestration Platform",
     version="1.0.0",
-    docs_url="/api/docs",
-    redoc_url="/api/redoc",
-    openapi_url="/api/openapi.json",
     lifespan=lifespan
 )
 
-# CORS
+# Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
+    allow_origins=["*"],  # In production, replace with specific origins
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Include API routes
-app.include_router(api_router, prefix="/api/v1")
+# Include routers
+app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
+app.include_router(tasks.router, prefix="/api/tasks", tags=["Tasks"])
+app.include_router(agents.router, prefix="/api/agents", tags=["Agents"])
+app.include_router(billing.router, prefix="/api/billing", tags=["Billing"])
+app.include_router(health.router, prefix="/health", tags=["Health"])
 
-@app.get("/health")
-async def health_check():
-    """Health check endpoint for the application."""
-    try:
-        # Test database connection
-        repo = get_repository()
-        with repo.driver.session() as session:
-            session.run("RETURN 1")
-        
-        return {
-            "status": "healthy",
-            "version": app.version,
-            "database": "connected",
-            "environment": settings.ENVIRONMENT
-        }
-    except Exception as e:
-        logger.error(f"Health check failed: {e}")
-        raise HTTPException(
-            status_code=503,
-            detail={
-                "status": "unhealthy",
-                "version": app.version,
-                "error": str(e),
-                "environment": settings.ENVIRONMENT
-            }
-        )
+# Middleware for request/response logging
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    logger.info(f"Request: {request.method} {request.url}")
+    response = await call_next(request)
+    logger.info(f"Response status: {response.status_code}")
+    return response
 
+# Dependency overrides for testing
+def get_db():
+    return db
+
+def get_redis():
+    return redis_service
+
+def get_auth_service():
+    return auth_service
+
+# Root endpoint
+@app.get("/")
+async def root():
+    """Root endpoint for health check"""
+    return {
+        "status": "ok",
+        "service": "AgentFlow Pro API",
+        "version": "1.0.0"
+    }
+
+# Error handlers
+@app.exception_handler(HTTPException)
+async def http_exception_handler(request, exc):
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"detail": exc.detail},
+    )
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request, exc):
+    logger.exception("Unhandled exception")
+    return JSONResponse(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content={"detail": "Internal server error"},
+    )
+
+# This allows running with uvicorn directly: `uvicorn app.main:app`
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run(
+        "app.main:app",
+        host="0.0.0.0",
+        port=8000,
+        reload=True,
+        log_level="info"
+    )
