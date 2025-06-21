@@ -19,3 +19,16 @@ class OrchestrationState(BaseModel):
     results: Dict[str, Any]
     coordination_messages: List[BaseMessage]
     final_output: Optional[Dict[str, Any]]
+
+class WorkflowDefinition(BaseModel):
+    name: str
+    definition: Dict[str, Any]
+
+class WorkflowRunRequest(BaseModel):
+    workflow_id: str
+    input_data: Dict[str, Any]
+
+class WorkflowStateResponse(BaseModel):
+    workflow_id: str
+    state: str
+    details: Optional[Dict[str, Any]] = None

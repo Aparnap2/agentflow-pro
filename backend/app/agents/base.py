@@ -11,16 +11,19 @@ logger = logging.getLogger(__name__)
 
 class AgentRole(str, Enum):
     """Agent roles in the system"""
+    # Core Leadership
     COFOUNDER = "cofounder"
     MANAGER = "manager"
-    LEGAL_AGENT = "legal_agent"
-    FINANCE_AGENT = "finance_agent"
-    HEALTHCARE_AGENT = "healthcare_agent"    
-    SALES = "sales"
-    SUPPORT = "support"
-    GROWTH = "growth"
-    MARKET_RESEARCH = "market_research"
-    MARKETING = "marketing"
+    
+    # Business Function Agents
+    CRM_AGENT = "crm_agent"
+    EMAIL_MARKETING_AGENT = "email_marketing_agent"
+    INVOICE_AGENT = "invoice_agent"
+    SCHEDULING_AGENT = "scheduling_agent"
+    SOCIAL_AGENT = "social_agent"
+    HR_AGENT = "hr_agent"
+    ADMIN_AGENT = "admin_agent"
+    REVIEW_AGENT = "review_agent"
 
 class Department(str, Enum):
     """Department classifications for agents"""
@@ -31,6 +34,7 @@ class Department(str, Enum):
     SUPPORT = "support"
     FINANCE = "finance"
     HR = "hr"
+    ADMIN = "admin"
 
 class AgentConfig(BaseModel):
     """Configuration for an agent instance"""

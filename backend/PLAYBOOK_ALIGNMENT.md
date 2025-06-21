@@ -1,100 +1,125 @@
-# AgentFlow Pro - Playbook Alignment Summary
+## AgentFlow Pro - Playbook Alignment Summary (SMB & Startup Boring Task Edition)
 
-## ✅ Key Improvements Made to Match Playbook Requirements
+## 1. **Vertical Specialization Implementation (Revised for SMB/Startup Boring Tasks)**
 
-### 1. **Vertical Specialization Implementation**
-- **✅ Added Industry-Specific Agents**: 
-  - `legal_agent` - Contract analysis, legal research, e-discovery
-  - `finance_agent` - Portfolio analysis, tax law, compliance
-  - `healthcare_agent` - Patient data, treatment planning, HIPAA compliance
-  - `manufacturing_agent` - Predictive maintenance, quality control
-  - `ecommerce_agent` - Cart recovery, Shopify automation, WhatsApp integration
-  - `coaching_agent` - Lead follow-up, client management, CRM automation
+**Replaced complex industry agents with practical, high-impact automation agents for small businesses and startups:**
 
-### 2. **Technology Stack Alignment**
-- **✅ OpenRouter Integration**: Switched from OpenAI to OpenRouter with Claude 3.5 Sonnet
-- **✅ LangGraph Orchestration**: Maintained LangGraph for agent workflow
-- **✅ Qdrant Vector DB**: RAG-enabled knowledge modules
-- **✅ Graphiti Memory**: Neo4j-based memory for session retention
-- **✅ PostgreSQL**: Multi-tenant database with row-level security
+- `crm_agent` – Automates lead capture, follow-ups, customer segmentation, and sales pipeline updates[1](https://www.rippling.com/blog/small-business-automation)[5](https://www.godaddy.com/resources/skills/things-small-business-should-automate)[6](https://www.linkedin.com/pulse/unleashing-small-business-potential-5-vital-tasks-expert-huzlc)[7](https://blog.appointy.com/2023/07/27/small-business-automation/).
+- `email_marketing_agent` – Handles email campaigns, drip sequences, abandoned cart reminders, and basic analytics[1](https://www.rippling.com/blog/small-business-automation)[5](https://www.godaddy.com/resources/skills/things-small-business-should-automate)[7](https://blog.appointy.com/2023/07/27/small-business-automation/).
+- `invoice_agent` – Automates invoice creation, sending, payment reminders, and reconciliation[5](https://www.godaddy.com/resources/skills/things-small-business-should-automate)[7](https://blog.appointy.com/2023/07/27/small-business-automation/).
+- `scheduling_agent` – Manages appointment bookings, reminders, and calendar sync[5](https://www.godaddy.com/resources/skills/things-small-business-should-automate)[6](https://www.linkedin.com/pulse/unleashing-small-business-potential-5-vital-tasks-expert-huzlc)[7](https://blog.appointy.com/2023/07/27/small-business-automation/).
+- `social_agent` – Schedules and posts to social media, monitors engagement, and basic reporting[5](https://www.godaddy.com/resources/skills/things-small-business-should-automate)[7](https://blog.appointy.com/2023/07/27/small-business-automation/).
+- `hr_agent` – Tracks time, manages leave requests, onboarding, and simple payroll notifications[3](https://www.reddit.com/r/smallbusiness/comments/148bivh/what_are_tasks_in_your_small_business_that_could/)[4](https://sparkservices.net/50-automation-ideas-for-small-businesses)[5](https://www.godaddy.com/resources/skills/things-small-business-should-automate)[6](https://www.linkedin.com/pulse/unleashing-small-business-potential-5-vital-tasks-expert-huzlc).
+- `admin_agent` – Fills out forms, collects routine data, generates simple reports, and manages document workflows[4](https://sparkservices.net/50-automation-ideas-for-small-businesses)[5](https://www.godaddy.com/resources/skills/things-small-business-should-automate).
+- `review_agent` – Monitors and responds to customer reviews, sends automated feedback requests, and compiles sentiment summaries[5](https://www.godaddy.com/resources/skills/things-small-business-should-automate).
 
-### 3. **Pricing Model Implementation**
-- **✅ Usage-Based Pricing**: API calls and LLM tokens per plan
-- **✅ Outcome-Based Pricing**: Added tracking for:
-  - Contracts processed
-  - Leads generated
-  - Claims resolved
-  - Documents analyzed
-  - Patients processed
-  - Orders fulfilled
-- **✅ Multi-Tier Plans**: Starter, Pro, Enterprise with different quotas
+------
 
-### 4. **Security & Multi-Tenancy**
-- **✅ Tenant Isolation**: Row-level security policies
-- **✅ JWT Authentication**: Secure token-based auth
-- **✅ Rate Limiting**: Per-tenant rate limiting with Redis
-- **✅ Stripe Integration**: Billing and subscription management
+## 2. **Technology Stack Alignment**
 
-### 5. **Agent Hierarchy (PRD Compliant)**
+- **✅ OpenRouter Integration:** Claude 3.5 Sonnet for LLM tasks.
+- **✅ LangGraph Orchestration:** For agent workflow management.
+- **✅ Qdrant Vector DB:** For knowledge retrieval and RAG.
+- **✅ Graphiti Memory:** Neo4j-based session memory.
+- **✅ PostgreSQL:** Multi-tenant, secure data storage.
+
+------
+
+## 3. **Pricing Model Implementation**
+
+- **✅ Usage-Based Pricing:** API calls and LLM tokens per plan.
+- **✅ Outcome-Based Pricing:** Tracks:
+  - Leads captured
+  - Emails sent
+  - Invoices processed
+  - Appointments scheduled
+  - Social posts published
+  - Reviews managed
+- **✅ Multi-Tier Plans:** Starter, Pro, Enterprise.
+
+------
+
+## 4. **Security & Multi-Tenancy**
+
+- **✅ Tenant Isolation:** Row-level security.
+- **✅ JWT Authentication:** Secure access.
+- **✅ Rate Limiting:** Per-tenant via Redis.
+- **✅ Stripe Integration:** Billing and subscription.
+
+------
+
+## 5. **Agent Hierarchy (PRD Compliant, SMB Version)**
+
 ```
-CoFounder (Strategic Vision)
+textCoFounder (Strategic Vision)
     ↓
 Manager (Workflow Coordination)
     ↓
 Vertical Specialists:
-├── Legal Agent (Contract analysis, litigation)
-├── Finance Agent (Portfolio, tax compliance)
-├── Healthcare Agent (Patient data, HIPAA)
-├── Manufacturing Agent (Predictive maintenance)
-├── E-commerce Agent (Cart recovery, Shopify)
-└── Coaching Agent (Lead follow-up, CRM)
+├── CRM Agent (Lead management)
+├── Email Marketing Agent (Campaigns)
+├── Invoice Agent (Billing)
+├── Scheduling Agent (Appointments)
+├── Social Agent (Social media)
+├── HR Agent (Time/leave tracking)
+├── Admin Agent (Forms/reports)
+└── Review Agent (Feedback/ratings)
 ```
 
-### 6. **API Endpoints Added**
-- **Authentication**: `/auth/register`, `/auth/login`, `/auth/me`
-- **Billing**: `/billing/create-checkout-session`, `/billing/webhook`, `/billing/usage`
-- **Vertical Agents**: `/agents/vertical` - Get industry-specific agent templates
-- **Rate Limited**: All endpoints now include tenant-aware rate limiting
+------
+
+## 6. **API Endpoints Added**
+
+- **Authentication:** `/auth/register`, `/auth/login`, `/auth/me`
+- **Billing:** `/billing/create-checkout-session`, `/billing/webhook`, `/billing/usage`
+- **Vertical Agents:** `/agents/vertical` – Get SMB agent templates
+- **Rate Limited:** All endpoints tenant-aware
+
+------
 
 ## 📋 Playbook Requirements Status
 
-| Requirement | Status | Implementation |
-|-------------|--------|----------------|
-| **Vertical Agent Templates** | ✅ | 6 industry-specific agents with specialized tools |
-| **LangGraph + CrewAI** | ⚠️ | LangGraph implemented, CrewAI integration pending |
-| **RAG Expertise** | ✅ | Qdrant vector DB with document processing |
-| **Memory Modules** | ✅ | Graphiti MCP with Neo4j |
-| **OpenRouter Model Access** | ✅ | Claude 3.5 Sonnet via OpenRouter |
-| **Usage-based Pricing** | ✅ | API calls and token tracking |
-| **Outcome-based Pricing** | ✅ | Database schema and tracking models |
-| **Security-first Architecture** | ✅ | Multi-tenant with row-level security |
-| **Zero-trust Network** | ⚠️ | JWT auth implemented, network security pending |
+| Requirement                     | Status | Implementation                              |
+| ------------------------------- | ------ | ------------------------------------------- |
+| **Vertical Agent Templates**    | ✅      | 8 SMB/Startup agents with specialized tools |
+| **LangGraph + CrewAI**          | ⚠️      | LangGraph implemented, CrewAI pending       |
+| **RAG Expertise**               | ✅      | Qdrant vector DB                            |
+| **Memory Modules**              | ✅      | Graphiti MCP with Neo4j                     |
+| **OpenRouter Model Access**     | ✅      | Claude 3.5 Sonnet                           |
+| **Usage-based Pricing**         | ✅      | API/tokens tracked                          |
+| **Outcome-based Pricing**       | ✅      | Database schema and tracking                |
+| **Security-first Architecture** | ✅      | Multi-tenant, row-level security            |
+| **Zero-trust Network**          | ⚠️      | JWT auth, network security pending          |
 
-## 🎯 Target Industries Covered
+------
 
-1. **Legal Tech** - Contract analysis, e-discovery, compliance
-2. **Financial Advisory** - Portfolio analysis, tax optimization
-3. **Healthcare** - Patient data, HIPAA-compliant automation
-4. **Manufacturing** - Predictive maintenance, quality control
-5. **E-commerce** - Cart recovery, Shopify integration
-6. **Coaching Industry** - Lead nurturing, client management
+## 🎯 Target Boring Tasks in SMBs & Startups
+
+1. **CRM & Lead Management** – Automated follow-ups, segmentation, pipeline updates[1](https://www.rippling.com/blog/small-business-automation)[2](https://keap.com/resources/25-things-every-small-business-should-automate)[5](https://www.godaddy.com/resources/skills/things-small-business-should-automate)[6](https://www.linkedin.com/pulse/unleashing-small-business-potential-5-vital-tasks-expert-huzlc)[7](https://blog.appointy.com/2023/07/27/small-business-automation/).
+2. **Email Marketing** – Campaigns, reminders, analytics[1](https://www.rippling.com/blog/small-business-automation)[2](https://keap.com/resources/25-things-every-small-business-should-automate)[5](https://www.godaddy.com/resources/skills/things-small-business-should-automate)[7](https://blog.appointy.com/2023/07/27/small-business-automation/).
+3. **Invoicing & Payments** – Invoice creation, reminders, reconciliation[5](https://www.godaddy.com/resources/skills/things-small-business-should-automate)[7](https://blog.appointy.com/2023/07/27/small-business-automation/).
+4. **Appointment Scheduling** – Bookings, reminders, calendar sync[5](https://www.godaddy.com/resources/skills/things-small-business-should-automate)[6](https://www.linkedin.com/pulse/unleashing-small-business-potential-5-vital-tasks-expert-huzlc)[7](https://blog.appointy.com/2023/07/27/small-business-automation/).
+5. **Social Media** – Scheduling, posting, engagement monitoring[5](https://www.godaddy.com/resources/skills/things-small-business-should-automate)[7](https://blog.appointy.com/2023/07/27/small-business-automation/).
+6. **HR Admin** – Time tracking, leave requests, onboarding[3](https://www.reddit.com/r/smallbusiness/comments/148bivh/what_are_tasks_in_your_small_business_that_could/)[4](https://sparkservices.net/50-automation-ideas-for-small-businesses)[5](https://www.godaddy.com/resources/skills/things-small-business-should-automate)[6](https://www.linkedin.com/pulse/unleashing-small-business-potential-5-vital-tasks-expert-huzlc).
+7. **Routine Admin** – Forms, data entry, simple reporting[4](https://sparkservices.net/50-automation-ideas-for-small-businesses)[5](https://www.godaddy.com/resources/skills/things-small-business-should-automate).
+8. **Review & Feedback** – Monitoring, responding, compiling feedback[5](https://www.godaddy.com/resources/skills/things-small-business-should-automate).
+
+------
 
 ## 🚀 Ready for MVP Launch
 
-The implementation now aligns with the playbook's core requirements:
-- ✅ Vertical specialization over horizontal approaches
-- ✅ Industry-specific agent templates
-- ✅ Multi-tenant SaaS architecture
-- ✅ Usage and outcome-based pricing
-- ✅ Security-first design
-- ✅ Scalable FastAPI backend
+The platform now targets the most automatable, repetitive tasks in small businesses and startups, with vertical agents mapped to real-world needs and workflows.
+
+------
 
 ## ⚠️ Remaining Items for Full Compliance
 
-1. **CrewAI Integration** - Add CrewAI for multi-agent coordination
-2. **Visual Flow Builder** - No-code drag-and-drop interface
-3. **Advanced Tool Connectors** - Industry-specific API integrations
-4. **Monitoring Dashboard** - Langfuse integration for tracing
-5. **Zero-trust Network** - Advanced security hardening
+1. **CrewAI Integration** – Multi-agent coordination
+2. **Visual Flow Builder** – No-code interface (optional for MVP)
+3. **Advanced Tool Connectors** – More integrations (e.g., QuickBooks, Shopify)
+4. **Monitoring Dashboard** – Langfuse for tracing
+5. **Zero-trust Network** – Advanced security hardening
 
-The backend is now production-ready for the MVP launch targeting SMBs in vertical industries!
+------
+
+**This agent lineup is practical, portfolio-friendly, and directly aligned with the most common automation needs in SMBs and startups—perfect for showcasing your skills and attracting freelance clients.**

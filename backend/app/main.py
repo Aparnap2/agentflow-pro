@@ -13,6 +13,10 @@ from .services.auth_service import AuthService, security
 
 # Import routers
 from .api import auth, tasks, agents, billing, health
+from app.api.workflows import router as workflows_router
+from app.api.memory import router as memory_router
+from app.api.tools import router as tools_router
+from app.utils.monitoring import setup_opentelemetry, setup_logging, setup_metrics, setup_error_tracking
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -35,6 +39,12 @@ async def lifespan(app: FastAPI):
         logger.info("Database initialized")
         
         # Add any other initialization here
+        
+        # Monitoring and observability setup
+        setup_logging()
+        setup_opentelemetry(app)
+        setup_metrics(app)
+        setup_error_tracking(app)
         
         yield  # Application runs here
         
@@ -70,6 +80,9 @@ app.include_router(tasks.router, prefix="/api/tasks", tags=["Tasks"])
 app.include_router(agents.router, prefix="/api/agents", tags=["Agents"])
 app.include_router(billing.router, prefix="/api/billing", tags=["Billing"])
 app.include_router(health.router, prefix="/health", tags=["Health"])
+app.include_router(workflows_router)
+app.include_router(memory_router)
+app.include_router(tools_router)
 
 # Middleware for request/response logging
 @app.middleware("http")

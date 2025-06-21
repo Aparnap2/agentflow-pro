@@ -1,194 +1,126 @@
-Here’s a refined architecture tailored for your SMB AI Agentic Automation SaaS. It uses **LangGraph, LangChain, Pydantic, Neo4j+Graphiti for memory**, **Qdrant for RAG**, **PostgreSQL** for transactional data, a JS-based UI, with payment, monitoring, and rate‑limiting systems.
+Absolutely! Here’s a **Backend-Only PRD** for your AgentFlow platform, focusing on API-driven, code-first, modular, and persistent agent orchestration—designed to integrate seamlessly with your Next.js frontend.
 
 ---
 
-## 1. 🏢 Tech Stack Overview
-
-* **Frontend**: JavaScript (React/Next.js)
-* **Backend**: Python (FastAPI + WebSockets)
-* **Orchestration**: LangGraph
-* **Tooling**: LangChain tools
-* **Input/Output Validation**: Pydantic models
-* **Memory**: Graphiti on Neo4j (temporal knowledge graph) ([qdrant.tech][1], [reddit.com][2], [en.wikipedia.org][3], [reddit.com][4])
-* **Retrieval**: Qdrant via LangChain for vectorized RAG ([qdrant.tech][5])
-* **Primary DB**: PostgreSQL with RLS and pgvector (metadata) ([reddit.com][6])
-* **Auth**: OAuth2/JWT (tenant-aware)
-* **Rate Limiting**: Token/Bucket in Redis + pg for historical tracking
-* **Payment**: Stripe integration + billing service
-* **Logging/Monitoring**: ELK or Prometheus + Grafana and Sentry/OpenTelemetry
-* **LLM services**: Gemini, Qwen, Claude via OpenRouter / ADK
+# Product Requirements Document (PRD): AgentFlow Backend
 
 ---
 
-## 2. 🖥 System Architecture
+## 1. Purpose
 
-```mermaid
-graph TD
-  UX[UI (React/Next.js)]
-  API[FastAPI Backend]
-  Auth[Auth/JWT]
-  RateLimiter[Redis RateLimiter]
-  Orch[LangGraph Orchestrator]
-  
-  subgraph Agent Structure
-    CF[CoFounder Agent]
-    Mgr[Manager Agent]
-    subgraph Specialized Agents
-      Sales[Sales Agent]
-      Support[Support Agent]
-      Growth[Growth Agent]
-      Ops[DevOps Agent]
-      Legal[Legal Agent]
-    end
-  end
-
-  Memory[Graphiti + Neo4j]
-  Vector[RAG: Qdrant]
-  SQL[(PostgreSQL)]
-  Payment[Stripe]
-  Billing[(Billing DB)]
-  Logs[Logging & Metrics]
-  Monitor[Tracing APM]
-  
-  UX -->|Bearer token| API
-  API --> Auth
-  API --> RateLimiter
-  API --> Orch
-  Orch --> CF
-  CF --> Mgr
-  Mgr --> Sales & Support & Growth & Ops & Legal
-  Sales & Support & Growth & Ops & Legal --> Orch
-  specialized Agents -->|memory| Memory
-  specialized Agents -->|RAG| Vector
-  API --> SQL
-  API --> Payment
-  Payment --> Billing
-  API --> Logs
-  API --> Monitor
-```
+Build a scalable, modular backend API platform to orchestrate, monitor, and persist AI agent workflows for business automation. The backend exposes REST/gRPC endpoints for the Next.js frontend, handles agent orchestration, memory, tool integration, scheduling, and human-in-the-loop (HIL) checkpoints.
 
 ---
 
-## 3. 🗄 Database Schema (PostgreSQL)
+## 2. Scope
 
-```sql
-CREATE TABLE tenants (
-  tenant_id UUID PRIMARY KEY,
-  name TEXT, plan TEXT,
-  stripe_customer_id TEXT, created_at TIMESTAMP
-);
-
-CREATE TABLE users (
-  user_id UUID PRIMARY KEY, tenant_id UUID REFERENCES tenants,
-  email TEXT, hashed_pw TEXT, role TEXT, created_at TIMESTAMP
-);
-
-CREATE TABLE agent_states (
-  state_id SERIAL PRIMARY KEY, tenant_id UUID REFERENCES tenants,
-  agent_name TEXT, state_json JSONB, updated_at TIMESTAMP
-);
-
-CREATE TABLE memory_records (
-  record_id SERIAL PRIMARY KEY, tenant_id UUID REFERENCES tenants,
-  agent_name TEXT, embedding VECTOR(1536),
-  text TEXT, timestamp TIMESTAMPTZ
-);
-
-CREATE TABLE invoices (
-  invoice_id UUID PRIMARY KEY,
-  tenant_id UUID REFERENCES tenants,
-  stripe_invoice_id TEXT, status TEXT,
-  amount_due BIGINT, paid_at TIMESTAMPTZ
-);
-
-CREATE TABLE rate_limits (
-  tenant_id UUID PRIMARY KEY,
-  window_start TIMESTAMPTZ, api_calls INT, llm_tokens BIGINT
-);
-```
+- **Backend only:** No UI or frontend logic.
+- **API-driven:** All features accessible via documented endpoints.
+- **Integration-ready:** Designed for seamless connection with Next.js frontend.
 
 ---
 
-## 4. 🚦 Rate Limiting & Cost Controls
+## 3. Core Features
 
-* Per-tenant, sliding window quotas on:
-
-  * API usage (calls/day)
-  * LLM usage (tokens/day)
-* Redis token bucket + daily reset tracked in SQL
-* Exceeded quotas -> HTTP 429 & UI upgrade prompt
-
----
-
-## 5. 💳 Payment & Billing
-
-* Stripe checkout integration via FastAPI
-* Webhook updates `invoices` table
-* Payment failure triggers soft throttle (UI notification)
-* Usage tied to plan quotas and real usage metrics
+| Feature                        | Description                                                                                   |
+|--------------------------------|----------------------------------------------------------------------------------------------|
+| **Agent Orchestration**        | Graph-based orchestration (LangGraph) of modular agents; supports complex, parallel workflows |
+| **LLM-Powered Agents**         | Agents use OpenRouter LLM for reasoning, text generation, and tool use                        |
+| **Persistent Memory**          | Qdrant (vector) for semantic memory/RAG, Neo4j (Graphiti) for structured/relational memory   |
+| **Human-in-the-Loop (HIL)**    | API endpoints for pausing workflows, awaiting/retrieving human input, and resuming execution  |
+| **Scheduling & Triggers**      | Cron/event-based workflow initiation; endpoints for managing schedules and triggers           |
+| **Tool/API Integration**       | Crawl4AI and free APIs for data extraction, email, calendar, social, etc.                     |
+| **Context Sharing**            | Agents share context through persistent memory and optional Redis (Upstash) for ephemeral data|
+| **Data Validation**            | All agent inputs/outputs validated with Pydantic schemas                                      |
+| **Monitoring & Logging**       | Centralized logging of agent actions, workflow status, and errors (API-accessible)           |
 
 ---
 
-## 6. 🧭 Core Orchestration & Workflow
+## 4. API Endpoints (Sample)
 
-1. **User** initiates via UI → `CoFounder Agent`
-2. **CoFounder** captures goal (Pydantic-validated), assigns to `Manager Agent`
-3. **Manager Agent**:
-
-   * Uses LangGraph to spin off specialized agent workflows
-   * Receives structured JSON reports
-   * Consolidates into weekly summaries
-   * Returns to `CoFounder`
-4. **Specialized Agents** (Sales, Support, Growth, Ops, Legal):
-
-   * Each runs agent graph: LLM nodes, tool integration (via LangChain), memory ops, RAG queries, result caching
-   * Saves output to memory (Graphiti) and SQL state
-   * Sends structured output to Manager
-5. **Memory**:
-
-   * Graphiti + Neo4j keeps temporal interactions and entity relationships ([github.com][7], [reddit.com][8], [qdrant.tech][1], [reddit.com][9], [reddit.com][2], [blog.futuresmart.ai][10])
-   * Qdrant supports RAG lookups of supporting documents ([qdrant.tech][5])
+| Endpoint                               | Method | Description                                           |
+|-----------------------------------------|--------|-------------------------------------------------------|
+| `/api/workflows`                       | POST   | Start new agent workflow (with payload/context)        |
+| `/api/workflows/{id}`                  | GET    | Get workflow status, results, and logs                 |
+| `/api/workflows/{id}/pause`            | POST   | Pause workflow for human-in-the-loop                   |
+| `/api/workflows/{id}/resume`           | POST   | Resume workflow after human input                      |
+| `/api/agents`                          | GET    | List available agents and their capabilities           |
+| `/api/agents/{agent_id}/run`           | POST   | Run a single agent with given input                    |
+| `/api/memory/qdrant/{agent_id}`        | GET    | Retrieve agent semantic memory                         |
+| `/api/memory/neo4j/{agent_id}`         | GET    | Retrieve agent structured/graph memory                 |
+| `/api/schedules`                       | POST   | Create or update workflow schedules (cron/events)      |
+| `/api/logs/{workflow_id}`              | GET    | Retrieve logs for auditing/debugging                   |
 
 ---
 
-## 7. 📊 Monitoring & Logging
+## 5. Technical Stack
 
-* Request traces via OpenTelemetry (FastAPI & agent nodes)
-* LLM API usage, latency, cost metrics
-* Error tracking with Sentry
-* Aggregated dashboards in Grafana (Prometheus metrics)
-* Audit logs with tenant, user, agent, timestamp metadata
-
----
-
-## 8. 🔒 Security & Multi-Tenancy
-
-* Postgres RLS ensures per-tenant isolation
-* JWT + role-based access control
-* Encrypted at-rest & TLS
-* Audit trails for agent activity
-* CI/CD includes SAST/DAST
+| Layer             | Technology/Service      | Purpose                                |
+|-------------------|------------------------|----------------------------------------|
+| Orchestration     | LangGraph              | Multi-agent, graph-based workflows     |
+| LLM               | OpenRouter LLM         | Reasoning, text generation             |
+| Data Modeling     | Pydantic               | Schema validation                      |
+| Semantic Memory   | Qdrant                 | Vector store, RAG                      |
+| Graph Memory      | Neo4j + Graphiti       | Persistent, relational memory          |
+| Data Extraction   | Crawl4AI               | Web/data crawling                      |
+| Tool Integration  | Free APIs              | Email, calendar, social, etc.          |
+| Context Sharing   | Upstash Redis (opt.)   | Fast ephemeral context                 |
+| API Framework     | FastAPI (suggested)    | Async, type-safe API layer             |
+| Logging/Monitoring| OpenTelemetry/Logging  | Centralized logs, tracing              |
 
 ---
 
-## 9. 🚀 Deployment & Scaling Strategy
+## 6. Non-Functional Requirements
 
-* Use Docker Compose or Kubernetes
-* Separate services: FastAPI, LangGraph executor, Neo4j, Qdrant, PostgreSQL, Redis
-* Async task workers for agent graphs (Celery/RabbitMQ or native asyncio)
-* Metrics autoscaling based on usage
-* Zero-downtime migrations
+- **Open-source/freemium tools only**
+- **Stateless API** (except for persistent memory layers)
+- **Secure** endpoints (JWT/OAuth2, CORS, rate-limiting)
+- **Scalable**: Async processing, queue-based task execution
+- **Extensible**: Easy to add new agents, tools, or workflows
+- **Comprehensive logging** for all actions and decisions
 
 ---
 
-### ✅ Summary
+## 7. Milestones & Deliverables
 
-This design delivers a **multi‑tenant SaaS** for SMBs, with:
+| Milestone                       | Deliverable                                   |
+|---------------------------------|-----------------------------------------------|
+| Agent interface/schema design   | Pydantic models, agent base classes           |
+| Memory layer integration        | Qdrant, Neo4j/Graphiti connectors             |
+| Orchestration engine            | LangGraph-based workflow engine               |
+| Tool/API connectors             | Crawl4AI, free API wrappers                   |
+| HIL endpoints                   | Pause/resume logic and endpoints              |
+| Scheduling/triggers             | Cron/event-based workflow initiators          |
+| API documentation               | OpenAPI/Swagger docs                          |
+| Logging/monitoring              | Centralized logs, error tracking              |
+| Integration tests               | API and workflow test suite                   |
 
-* Coordinated **agent hierarchy** (CoFounder → Manager → Specialists)
-* Dynamically updated **Graphiti memory**
-* Context-rich **Qdrant RAG**
-* Secure **PostgreSQL backend** with structured state
-* **Rate-limited**, **payment-aware** usage
-* **Full observability**, monitoring, and **scalability**
+---
 
+## 8. Success Metrics
+
+- API response time and uptime
+- Number of workflows/agents executed
+- Error/exception rates
+- Integration test coverage
+- Feedback from frontend integration
+
+---
+
+## 9. Out of Scope
+
+- Frontend/UI components (handled by Next.js)
+- Paid/proprietary APIs or SaaS
+- On-premise deployment (cloud-first for MVP)
+
+---
+
+## 10. Appendix
+
+- **Sample API payloads and responses**
+- **Agent and workflow schema examples**
+- **Integration guidelines for Next.js frontend**
+
+---
+
+**End of Backend PRD**
